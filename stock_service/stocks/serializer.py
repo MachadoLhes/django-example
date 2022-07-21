@@ -7,3 +7,4 @@ class StockSerializer(serializers.Serializer):
     high = serializers.DecimalField(max_digits=10, decimal_places=2)
     low = serializers.DecimalField(max_digits=10, decimal_places=2)
     close = serializers.DecimalField(max_digits=10, decimal_places=2)
+    date = serializers.DateTimeField()

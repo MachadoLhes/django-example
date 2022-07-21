@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.conf import settings
 from stocks.serializer import StockSerializer
 from stocks.utils import parse_stock
+from datetime import datetime
 
 class StockView(APIView):
     """
@@ -17,6 +18,8 @@ class StockView(APIView):
 
         resp = requests.get(url)
         stock = parse_stock(resp.text)
+
+        stock['date'] = datetime.now()
 
         serializer = StockSerializer(stock)
 
