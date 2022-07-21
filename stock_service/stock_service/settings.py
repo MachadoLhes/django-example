@@ -102,3 +102,5 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
 }
+
+STOOQ_URL = "https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=csv"
