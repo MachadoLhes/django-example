@@ -1,8 +1,11 @@
 # encoding: utf-8
+import requests, json
 
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.conf import settings
+from django.http import JsonResponse
 
 from api.models import UserRequestHistory
 from api.serializers import UserRequestHistorySerializer
@@ -15,8 +18,16 @@ class StockView(APIView):
     def get(self, request, *args, **kwargs):
         stock_code = request.query_params.get('q')
         # TODO: Call the stock service, save the response, and return the response to the user
-        return Response()
+        url = settings.STOCK_SERVICE_URL + f'stock_code={stock_code}'
 
+        resp = requests.get(url)
+        stock = resp.json()
+        serializer = UserRequestHistorySerializer(data=stock)
+
+        if serializer.is_valid():
+            serializer.save(user = self.request.user)
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HistoryView(generics.ListAPIView):
     """

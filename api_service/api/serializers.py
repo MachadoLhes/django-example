@@ -9,3 +9,5 @@ class UserRequestHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRequestHistory
         exclude = ['id', 'user']
+        extra_kwargs = {'date': {'write_only':True}}
+
