@@ -9,7 +9,7 @@ from django.http import JsonResponse
 
 from api.models import UserRequestHistory
 from api.serializers import UserRequestHistorySerializer
-
+from api.utils import hide_field
 
 class StockView(APIView):
     """
@@ -17,7 +17,6 @@ class StockView(APIView):
     """
     def get(self, request, *args, **kwargs):
         stock_code = request.query_params.get('q')
-        # TODO: Call the stock service, save the response, and return the response to the user
         url = settings.STOCK_SERVICE_URL + f'stock_code={stock_code}'
 
         resp = requests.get(url)
@@ -26,7 +25,8 @@ class StockView(APIView):
 
         if serializer.is_valid():
             serializer.save(user = self.request.user)
-            return JsonResponse(serializer.data)
+            stock_json = serializer.data
+            return JsonResponse(hide_field(stock_json, 'date'))
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HistoryView(generics.ListAPIView):
@@ -35,7 +35,11 @@ class HistoryView(generics.ListAPIView):
     """
     queryset = UserRequestHistory.objects.all()
     serializer_class = UserRequestHistorySerializer
-    # TODO: Filter the queryset so that we get the records for the user making the request.
+
+    def list(self, request):
+        queryset = self.get_queryset().filter(user=request.user)
+        serializer = UserRequestHistorySerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class StatsView(APIView):
