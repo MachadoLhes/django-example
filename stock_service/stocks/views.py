@@ -8,12 +8,16 @@ from stocks.serializer import StockSerializer
 from stocks.utils import parse_stock
 from datetime import datetime
 
+LOG_PREFIX = '[stock][views]'
+
 class StockView(APIView):
     """
     Receives stock requests from the API service.
     """
     def get(self, request, *args, **kwargs):
+        print(f'{LOG_PREFIX}[stock][GET] request received')
         stock_code = request.query_params.get('stock_code')
+        print(f'{LOG_PREFIX}[stock][GET] searching for stock code: {stock_code}')
         url = settings.STOOQ_URL + f'&s={stock_code}'
 
         resp = requests.get(url)
