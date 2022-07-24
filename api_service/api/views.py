@@ -10,7 +10,7 @@ from django.http import JsonResponse
 
 from api.models import UserRequestHistory
 from api.serializers import UserRequestHistorySerializer
-from api.functions import hide_field, get_top_stats
+from api.functions import hide_field, get_stock, get_top_stats
 
 LOG_PREFIX = '[api][views]'
 
@@ -21,10 +21,7 @@ class StockView(APIView):
     def get(self, request, *args, **kwargs):
         print(f'{LOG_PREFIX}[stock][GET] request received')
         stock_code = request.query_params.get('q')
-        url = settings.STOCK_SERVICE_URL + f'stock_code={stock_code}'
-
-        resp = requests.get(url)
-        stock = resp.json()
+        stock = get_stock(stock_code)
         serializer = UserRequestHistorySerializer(data=stock)
 
         if serializer.is_valid():
