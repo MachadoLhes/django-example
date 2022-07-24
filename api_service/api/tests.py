@@ -67,7 +67,7 @@ class ApiTestCase(TestCase):
         "Should fail if not authorized"
 
         response = self.client.get('/stock?q=aapl.us')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_history_view(self):
         "Should return stock history"
