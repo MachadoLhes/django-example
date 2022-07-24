@@ -4,12 +4,13 @@ import requests, json
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 from django.conf import settings
 from django.http import JsonResponse
 
 from api.models import UserRequestHistory
 from api.serializers import UserRequestHistorySerializer
-from api.utils import hide_field
+from api.functions import hide_field, get_top_stats
 
 class StockView(APIView):
     """
@@ -46,7 +47,9 @@ class StatsView(APIView):
     """
     Allows super users to see which are the most queried stocks.
     """
-    # TODO: Implement the query needed to get the top-5 stocks as described in the README, and return
-    # the results to the user.
+    permission_classes = [IsAdminUser]
+
     def get(self, request, *args, **kwargs):
-        return Response()
+        top_stocks = get_top_stats()
+
+        return Response(top_stocks)
