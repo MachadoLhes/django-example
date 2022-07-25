@@ -1,4 +1,5 @@
 from django.conf import settings
+from datetime import datetime
 import requests
 
 def parse_stock(stock_line):
@@ -11,9 +12,14 @@ def parse_stock(stock_line):
 
     return stock
 
+def combine_datetime(date, time):
+    return datetime.strptime(f"{date} {time}","%Y-%m-%d %H:%M:%S")
+
 def get_stock(stock_code):
     url = settings.STOOQ_URL + f'&s={stock_code}'
     resp = requests.get(url)
     stock = parse_stock(resp.text)
+
+    stock['date'] = combine_datetime(stock['date'],stock['time'])
 
     return stock
