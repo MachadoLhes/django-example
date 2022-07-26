@@ -5,82 +5,87 @@
 # Python/Django Challenge
 
 ## Description
-This project is designed to test your knowledge of back-end web technologies, specifically in Python/Django, Rest APIs, and decoupled services (microservices).
+This project was created as a test for a software developer position at Jobsity.
 
-## Assignment
-The goal of this exercise is to create a simple API using Django and the Django Rest Framework to allow users to query [stock quotes](https://www.investopedia.com/terms/s/stockquote.asp).
-
-The project consists of two separate services:
-* A user-facing API that will receive requests from registered users asking for quote information.
-* An internal stock service that queries external APIs to retrieve the requested quote information.
-
-For simplicity, both services will share the same dependencies (requirements.txt) and can be run from the same virtualenv, but remember that they are still separate processes.
-
-## Minimum requirements
-### API service
-* Use Django's built-in features to create a user and a super user.
-* Endpoints in the API service should require authentication (no anonymous requests should be allowed). Each request should be authenticated via Basic Authentication.
-* When a user makes a request to get a stock quote (calls the stock endpoint in the api service), if a stock is found, it should be saved in the database associated to the user making the request.
-* The response returned by the API service should be like this:
-
-  `GET /stock?q=aapl.us`
-  ```
-    {
-    "name": "APPLE",
-    "symbol": "AAPL.US",
-    "open": 123.66,
-    "high": 123.66,
-    "low": 122.49,
-    "close": 123
-    }
-  ```
-* A user can get his history of queries made to the api service by hitting the history endpoint. The endpoint should return the list of entries saved in the database, showing the latest entries first:
-  
-  `GET /history`
-  ```
-  [
-      {"date": "2021-04-01T19:20:30Z", "name": "APPLE", "symbol": "AAPL.US", "open": "123.66", "high": 123.66, "low": 122.49, "close": "123"},
-      {"date": "2021-03-25T11:10:55Z", "name": "APPLE", "symbol": "AAPL.US", "open": "121.10", "high": 123.66, "low": 122, "close": "122"},
-      ...
-  ]
-  ```
-* A super user (and only super users) can hit the stats endpoint, which will return the top 5 most requested stocks:
-
-  `GET /stats`
-  ```
-  [
-      {"stock": "aapl.us", "times_requested": 5},
-      {"stock": "msft.us", "times_requested": 2},
-      ...
-  ]
-  ```
-* All endpoint responses should be in JSON format.
-
-### Stock service
-* Assume this is an internal service, so requests to endpoints in this service don't need to be authenticated.
-* When a stock request is received, this service should query an external API to get the stock information. For this challege, use this API: `​https://stooq.com/q/l/?s={stock_code}&f=sd2t2ohlcvn&h&e=csv​`.
-* Note that `{stock_code}` above is a parameter that should be replaced with the requested stock code.
-* You can see a list of available stock codes here: https://stooq.com/t/?i=518
-
-## Architecture
-![Architecture Diagram](diagram.svg)
-1. A user makes a request asking for Apple's current Stock quote: `GET /stock?q=aapl.us`
-2. The API service calls the stock service to retrieve the requested stock information
-3. The stock service delegates the call to the external API, parses the response, and returns the information back to the API service.
-4. The API service saves the response from the stock service in the database.
-5. The data is formatted and returned to the user.
-
-## Bonuses
-The following features are optional to implement, but if you do, you'll be ranked higher in our evaluation process.
-* Add unit tests for the bot and the main app.
-* Connect the two services via RabbitMQ instead of doing http calls.
-* Use JWT instead of basic authentication for endpoints.
+A [trello board](https://trello.com/invite/b/r7I2roMn/c1d7332cbaffdc983066313a944d48d8/jobsity-homework) was created for this challenge, as a way to keep track of the developing process.
 
 ## How to run the project
+### Running the container:
+* Simply run `docker compose up --build` from the project's root directory.
+### Running manually:
 * Create a virtualenv: `python -m venv virtualenv` and activate it `. virtualenv/bin/activate`.
 * Install dependencies: `pip install -r requirements.txt`
-* Start the api service: `cd api_service ; ./manage.py runserver`
-* Start the stock service: `cd stock_service ; ./manage.py runserver`
+* Start the api service: `cd api_service; python manage.py runserver`
+* Start the stock service: `cd stock_service ; python manage.py runserver 8001`
 
-__Important:__ If your implementation requires different steps to start the services
-(like starting a rabbitMQ consumer), document them here!
+## Services
+### API service
+__Important:__ This service requires authentication for it's usage. Authentication is made via token authentication, which you can retrieve from the `/api/token` endpoint detailed below.
+
+__Important:__ For this test purpose only, a default __super user__ is created on the project's first run, with the following credentials:
+  ```
+  username: admin
+  password: changeMe#4321
+  ```
+* This service will integrate with the Stock Service to retrieve stock information from an external api, in this case, `stooq.com`.
+* The following endpoints are available:
+
+  `GET /stock?q={stock_code}`
+
+  > Will retrieve, if found, `name`, `symbol`, `open`, `high`, `low` and `close` for the provided `stock_code`.
+
+  `GET /history`
+
+  > Will retrieve the history of queries made to the api service by the authenticated user.
+
+  `GET /stats`
+
+  > Accecible only by __super users__. Will return the top 5 most requested stocks.
+
+  `POST /api/token`
+
+  Expects the following `JSON` body:
+
+  ```json
+    {
+      "username":{username},
+      "email":{email},
+      "password":{password},
+      "is_admin":false,
+    }
+  ```
+
+  > Accecible only by __super users__. Will create a new user, which can be a __super user__ by using the optional parameter `is_admin: true` in body.
+
+  `POST /api/token`
+
+  Expects the following `JSON` body:
+
+  ```json
+    {
+      "username":{username},
+      "password":{password},
+    }
+  ```
+
+  > Will return both an `access` and `refresh` token, which will be valid for __30 minutes__ and __10 days__, respectively.
+
+  `POST /api/token/refresh`
+
+  Expects the following `JSON` body:
+
+  ```json
+    {
+      "refresh":{refresh_token},
+    }
+  ```
+
+  > Will return an `access` token, which will be valid for __30 minutes__.
+
+### Stock service
+* This is an internal service, essential for the `API service` to work.
+* This should only be used by the `API service`, but `stocks` can be queried via the following endpoint:
+
+  `GET /stock?stock_code={stock_code}`
+
+  > Will retrieve, if found, `name`, `symbol`, `open`, `high`, `low`, `close` and `date` for the provided `stock_code`.

@@ -15,9 +15,9 @@ SECRET_KEY = '8lry=eih0=6unsro-d)x7%l)e3&dlvb_aclwnzl%6+!gj6q8vz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -57,6 +57,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'stock_service.wsgi.application'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -102,3 +108,5 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
 }
+
+STOOQ_URL = "https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=csv"
