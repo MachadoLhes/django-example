@@ -7,6 +7,8 @@
 ## Description
 This project was created as a test for a software developer position at Jobsity.
 
+A [trello board](https://trello.com/invite/b/r7I2roMn/c1d7332cbaffdc983066313a944d48d8/jobsity-homework) was created for this challenge, as a way to keep track of the developing process.
+
 ## How to run the project
 ### Running the container:
 * Simply run `docker compose up --build` from the project's root directory.
