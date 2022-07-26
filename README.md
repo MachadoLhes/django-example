@@ -19,6 +19,12 @@ This project was created as a test for a software developer position at Jobsity.
 ## Services
 ### API service
 __Important:__ This service requires authentication for it's usage. Authentication is made via token authentication, which you can retrieve from the `/api/token` endpoint detailed below.
+
+__Important:__ For this test purpose only, a default __super user__ is created on the project's first run, with the following credentials:
+  ```
+  username: admin
+  password: changeMe#4321
+  ```
 * This service will integrate with the Stock Service to retrieve stock information from an external api, in this case, `stooq.com`.
 * The following endpoints are available:
 
