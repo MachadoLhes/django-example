@@ -19,6 +19,7 @@ class StockView(APIView):
         stock_code = request.query_params.get('q')
         print(f'{LOG_PREFIX}[stock][GET] searching for stock code: {stock_code}')
         stock = get_stock(stock_code)
+
         serializer = UserRequestHistorySerializer(data=stock)
 
         if serializer.is_valid():
