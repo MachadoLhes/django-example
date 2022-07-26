@@ -20,6 +20,9 @@ def get_stock(stock_code):
     resp = requests.get(url)
     stock = parse_stock(resp.text)
 
-    stock['date'] = combine_datetime(stock['date'],stock['time'])
+    try:
+        stock['date'] = combine_datetime(stock['date'],stock['time'])
+    except:
+        pass
 
     return stock
