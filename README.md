@@ -76,6 +76,4 @@ __Important:__ For this test purpose only, a default __super user__ is created o
 * This is an internal service, essential for the `API service` to work.
 * This should only be used by the `API service`, but `stocks` can be queried via the following endpoint:
 
-  `GET /stock?stock_code={stock_code}`
-
-  > Will retrieve, if found, `name`, `symbol`, `open`, `high`, `low`, `close` and `date` for the provided `stock_code`.
+  `GET /stock?stock_code={stock_code}`: Will retrieve, if found, `name`, `symbol`, `open`, `high`, `low`, `close` and `date` for the provided `stock_code`.
