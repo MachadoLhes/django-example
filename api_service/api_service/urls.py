@@ -12,5 +12,6 @@ urlpatterns = [
     path('stock/', api_views.StockView.as_view()),
     path('history/', api_views.HistoryView.as_view()),
     path('stats/', api_views.StatsView.as_view()),
+    path('users/', api_views.UsersView.as_view()),
     path('admin/', admin.site.urls),
 ]

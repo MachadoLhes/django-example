@@ -3,10 +3,13 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+from django.contrib.auth.models import User
 
 from api.models import UserRequestHistory
-from api.serializers import UserRequestHistorySerializer
+from api.serializers import UserRequestHistorySerializer, UserSerializer
 from api.functions import hide_field, get_stock, get_top_stats
+
+import json
 
 LOG_PREFIX = '[api][views]'
 
@@ -56,3 +59,27 @@ class StatsView(APIView):
         top_stocks = get_top_stats()
 
         return Response(top_stocks)
+
+class UsersView(APIView):
+    """
+    Allows super users to create another users.
+    """
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        print(f'{LOG_PREFIX}[user][POST] request received')
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        serializer = UserSerializer(data=body)
+        if serializer.is_valid():
+            if User.objects.filter(username=body['username']).exists():
+                return Response(f"User {body['username']} already exists", status=status.HTTP_409_CONFLICT)
+
+            print(f'{LOG_PREFIX}[user][POST] creating new user {body["username"]}')
+            serializer.save()
+            print(f'{LOG_PREFIX}[user][POST] new user {body["username"]} created successfully')
+
+            return Response(f'User {body["username"]} created successfully')
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
