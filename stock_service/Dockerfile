@@ -8,5 +8,6 @@ COPY ./stock_service /stock_service
 COPY ./requirements.txt /stock_service
 WORKDIR /stock_service
 RUN pip install -r requirements.txt
+RUN python manage.py migrate
 EXPOSE 8001
 CMD python manage.py runserver 8001
