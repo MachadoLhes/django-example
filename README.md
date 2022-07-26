@@ -30,19 +30,13 @@ __Important:__ For this test purpose only, a default __super user__ is created o
 * This service will integrate with the Stock Service to retrieve stock information from an external api, in this case, `stooq.com`.
 * The following endpoints are available:
 
-  `GET /stock?q={stock_code}`
+  `GET /stock?q={stock_code}`: Will retrieve, if found, `name`, `symbol`, `open`, `high`, `low` and `close` for the provided `stock_code`.
 
-  > Will retrieve, if found, `name`, `symbol`, `open`, `high`, `low` and `close` for the provided `stock_code`.
+  `GET /history`: Will retrieve the history of queries made to the api service by the authenticated user.
 
-  `GET /history`
+  `GET /stats`: Accecible only by __super users__. Will return the top 5 most requested stocks.
 
-  > Will retrieve the history of queries made to the api service by the authenticated user.
-
-  `GET /stats`
-
-  > Accecible only by __super users__. Will return the top 5 most requested stocks.
-
-  `POST /api/token`
+  `POST /users`: Accecible only by __super users__. Will create a new user, which can be a __super user__ by using the optional parameter `is_admin: true` in body.
 
   Expects the following `JSON` body:
 
@@ -55,9 +49,7 @@ __Important:__ For this test purpose only, a default __super user__ is created o
     }
   ```
 
-  > Accecible only by __super users__. Will create a new user, which can be a __super user__ by using the optional parameter `is_admin: true` in body.
-
-  `POST /api/token`
+  `POST /api/token`: Will return both an `access` and `refresh` token, which will be valid for __30 minutes__ and __10 days__, respectively.
 
   Expects the following `JSON` body:
 
@@ -68,9 +60,7 @@ __Important:__ For this test purpose only, a default __super user__ is created o
     }
   ```
 
-  > Will return both an `access` and `refresh` token, which will be valid for __30 minutes__ and __10 days__, respectively.
-
-  `POST /api/token/refresh`
+  `POST /api/token/refresh`: Will return an `access` token, which will be valid for __30 minutes__.
 
   Expects the following `JSON` body:
 
@@ -80,7 +70,7 @@ __Important:__ For this test purpose only, a default __super user__ is created o
     }
   ```
 
-  > Will return an `access` token, which will be valid for __30 minutes__.
+
 
 ### Stock service
 * This is an internal service, essential for the `API service` to work.
