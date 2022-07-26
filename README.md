@@ -9,7 +9,7 @@ This project was created as a test for a software developer position at Jobsity.
 
 ## How to run the project
 ### Running the container:
-* Simply run `docker compose up` from the project's root directory.
+* Simply run `docker compose up --build` from the project's root directory.
 ### Running manually:
 * Create a virtualenv: `python -m venv virtualenv` and activate it `. virtualenv/bin/activate`.
 * Install dependencies: `pip install -r requirements.txt`
