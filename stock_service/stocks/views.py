@@ -22,6 +22,7 @@ class StockView(APIView):
         serializer = StockSerializer(data=stock)
 
         if serializer.is_valid():
+            print(f'{LOG_PREFIX}[stock][GET] found for stock code: {stock_code}')
             stock_json = serializer.data
             return Response(stock_json)
 

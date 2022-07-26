@@ -1,12 +1,8 @@
 # encoding: utf-8
-import requests, json
-
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
-from django.conf import settings
-from django.http import JsonResponse
 
 from api.models import UserRequestHistory
 from api.serializers import UserRequestHistorySerializer
@@ -21,14 +17,18 @@ class StockView(APIView):
     def get(self, request, *args, **kwargs):
         print(f'{LOG_PREFIX}[stock][GET] request received')
         stock_code = request.query_params.get('q')
+        print(f'{LOG_PREFIX}[stock][GET] searching for stock code: {stock_code}')
         stock = get_stock(stock_code)
         serializer = UserRequestHistorySerializer(data=stock)
 
         if serializer.is_valid():
+            print(f'{LOG_PREFIX}[stock][GET] found for stock code: {stock_code}')
             serializer.save(user = self.request.user)
+            print(f'{LOG_PREFIX}[stock][GET] request added to user history')
             stock_json = serializer.data
-            return JsonResponse(hide_field(stock_json, 'date'))
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(hide_field(stock_json, 'date'))
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HistoryView(generics.ListAPIView):
     """
